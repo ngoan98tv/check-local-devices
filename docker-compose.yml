@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  app:
-    build: .
-    working_dir: /app
-    network_mode: host
-    command: npm start
-    volumes:
-      - .:/app
+  # app:
+  #   build: .
+  #   working_dir: /app
+  #   network_mode: host
+  #   command: npm start
+  #   volumes:
+  #     - .:/app
 
   mongo:
     image: mongo:5
