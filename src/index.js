@@ -8,7 +8,7 @@ const client = new MongoClient(appConfig.MONGO_URI);
 async function notifyChange(message) {
   const payload = {
     text: message,
-    icon_emoji: ":bot:",
+    icon_emoji: ":robot_face:",
     username: "ARP Bot",
   };
   let retried = 0;
@@ -53,14 +53,16 @@ async function main() {
         // Check newly online people
         people
           .find({
-            isOnline: false,
+            isOnline: {
+              $in: [false, null],
+            },
             mac: { $in: onlineMacs },
           })
           .toArray()
           .then((result) => {
             if (!result || !result[0]) return;
             const nameString = result
-              ?.map((person) => person.displayName)
+              ?.map((person) => person.displayName || person.name)
               ?.join(", ");
             notifyChange(`${nameString} just online`);
           });
@@ -68,7 +70,9 @@ async function main() {
         // Update online status
         people.updateMany(
           {
-            isOnline: false,
+            isOnline: {
+              $in: [false, null],
+            },
             mac: { $in: onlineMacs },
           },
           {
@@ -88,7 +92,7 @@ async function main() {
           .then((result) => {
             if (!result || !result[0]) return;
             const nameString = result
-              ?.map((person) => person.displayName)
+              ?.map((person) => person.displayName || person.name)
               ?.join(", ");
             notifyChange(`${nameString} just offline`);
           });
