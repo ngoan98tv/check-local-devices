@@ -16,7 +16,7 @@ async function notifyChange(message) {
   while (error && retried < 5) {
     try {
       const result = execSync(
-        `curl -X POST --data-urlencode \
+        `curl -s -X POST --data-urlencode \
       'payload=${JSON.stringify(payload)}' ${appConfig.SLACK_HOOK}`
       );
       console.log(result.toString());
@@ -62,9 +62,9 @@ async function main() {
           .then((result) => {
             if (!result || !result[0]) return;
             const nameString = result
-              ?.map((person) => person.displayName || person.name)
+              ?.map((person) => person.displayName || person.mac)
               ?.join(", ");
-            notifyChange(`${nameString} just online`);
+            notifyChange(`:radio_button: ${nameString} just online`);
           });
 
         // Update online status
@@ -92,9 +92,9 @@ async function main() {
           .then((result) => {
             if (!result || !result[0]) return;
             const nameString = result
-              ?.map((person) => person.displayName || person.name)
+              ?.map((person) => person.displayName || person.mac)
               ?.join(", ");
-            notifyChange(`${nameString} just offline`);
+            notifyChange(`:red_circle: ${nameString} just offline`);
           });
 
         // Update online status
@@ -119,7 +119,7 @@ async function main() {
               const previousValue = person[key];
               if (currentValue !== previousValue) {
                 notifyChange(
-                  `${person.displayName} change ${key} from ${previousValue} to ${currentValue}`
+                  `:warning: ${person.displayName} change ${key} from ${previousValue} to ${currentValue}`
                 );
               }
             }
