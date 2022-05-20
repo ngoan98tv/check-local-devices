@@ -13,7 +13,7 @@ async function main() {
   const db = client.db(appConfig.MONGO_DB);
 
   const people = db.collection("people");
-
+  
   await new Promise(() => {
     console.log(`Start interval`);
     setInterval(() => {
@@ -32,6 +32,7 @@ async function main() {
             isOnline: false,
             mac: { $in: onlineMacs },
           })
+          .toArray()
           .then((result) => {
             const nameString = result
               ?.map((person) => person.displayName)
@@ -58,6 +59,7 @@ async function main() {
             isOnline: true,
             mac: { $nin: onlineMacs },
           })
+          .toArray()
           .then((result) => {
             const nameString = result
               ?.map((person) => person.displayName)
@@ -82,7 +84,7 @@ async function main() {
         devices.forEach(async (device) => {
           const person = await people.findOne({ mac: device.mac });
           for (const key in device) {
-            if (Object.hasOwnProperty.call(device, key)) {
+            if (person && Object.hasOwnProperty.call(person, key)) {
               const currentValue = device[key];
               const previousValue = person[key];
               if (currentValue !== previousValue) {
@@ -92,7 +94,11 @@ async function main() {
               }
             }
           }
-          await people.updateOne({ mac: device.mac }, { $set: device });
+          await people.updateOne(
+            { mac: device.mac },
+            { $set: device },
+            { upsert: true }
+          );
         });
       });
     }, appConfig.CHECK_INTERVAL);

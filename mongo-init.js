@@ -8,3 +8,5 @@ db.people.insertMany([
     displayName: "Administrator",
   },
 ]);
+
+db.people.createIndex({ mac: 1 });

@@ -4,12 +4,13 @@ services:
   app:
     build: .
     working_dir: /app
-    network_mode: bridge
+    network_mode: host
+    command: npm start
     volumes:
       - .:/app
 
   mongo:
-    image: mongo
+    image: mongo:5
     restart: always
     ports:
       - 27017:27017
@@ -19,6 +20,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: local-devices
 
   mongo-express:
     image: mongo-express
