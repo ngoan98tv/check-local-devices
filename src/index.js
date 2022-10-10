@@ -62,7 +62,7 @@ async function main() {
           .then((result) => {
             if (!result || !result[0]) return;
             const nameString = result
-              ?.map((person) => person.displayName || person.mac)
+              ?.map((person) => person.displayName || person.mac || person.ip)
               ?.join(", ");
             notifyChange(`:radio_button: ${nameString} just online`);
           });
